@@ -15,25 +15,16 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.helpdesk.models.enumerate;
+package it.cnr.iit.epas.helpdesk;
 
-/**
- * Ruoli di sistema.
- *
- * @author Daniele Murgia
- * @since 30/08/16
- */
-public enum AccountRole {
-  DEVELOPER,
-  ADMIN,
-  MISSIONS_MANAGER,
-  CONTRACTUAL_MANAGER,
-  //Amministratore in sola lettura
-  RO_ADMIN, 
-  ABSENCES_MANAGER,
-  //Può leggere i dati di tutto il personale relativi
-  //a presenze e assenze del personale
-  PERSON_DAYS_READER,
-  //Gestore dell'anagrafica del personale
-  REGISTRY_MANAGER
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class HelpeskServiceApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
 }

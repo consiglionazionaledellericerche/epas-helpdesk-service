@@ -44,16 +44,16 @@ public class EmailService {
   private final JavaMailSender mailSender;
 
   public void sendEmail(EmailData emailData) throws MessagingException {
-    sendEmail(emailData.getTo(), emailData.getCc(), emailData.getReplyTo(),
+    sendEmail(emailData.getTo(), emailData.getFrom(), emailData.getCc(), emailData.getReplyTo(),
         emailData.getSubject(), emailData.getBody(), emailData.getAttachments());
   }
 
-  public void sendEmail(String to, String subject, String body, 
+  public void sendEmail(String to, String from, String subject, String body, 
       List<FileAttachment> attachments) throws MessagingException {
-    sendEmail(Lists.newArrayList(to), Lists.newArrayList(), Optional.empty(), subject, body, attachments);
+    sendEmail(Lists.newArrayList(to), from, Lists.newArrayList(), Optional.empty(), subject, body, attachments);
   }
 
-  public void sendEmail(List<String> to, List<String> cc, Optional<String> replyTo, 
+  public void sendEmail(List<String> to, String from, List<String> cc, Optional<String> replyTo, 
       String subject, String body, List<FileAttachment> attachments) throws MessagingException {
     Verify.verifyNotNull(to);
     Verify.verifyNotNull(subject);
@@ -63,6 +63,7 @@ public class EmailService {
 
     helper.setTo(to.toArray(new String[0]));
     helper.setSubject(subject);
+    helper.setFrom(from);
     if (cc != null && !cc.isEmpty()) {
       helper.setCc(cc.toArray(new String[0]));
     }
@@ -70,11 +71,11 @@ public class EmailService {
     helper.setText(body);
 
     for (FileAttachment attachment : attachments) {
-      helper.addAttachment(attachment.getFileName(), attachment.getResource());
+      helper.addAttachment(attachment.getFileName(), attachment.getDataSource());
     }
 
     mailSender.send(message);
-    log.info("Inviata email a {}, cc = {}, subject = {}, body = {}, "
-        + "attachment is present = {}", to, cc, subject, body, !attachments.isEmpty());
+    log.info("Inviata email a {}, from = {}, cc = {}, subject = {}, body = {}, "
+        + "attachments are present = {}", to, from, cc, subject, body, !attachments.isEmpty());
   }
 }

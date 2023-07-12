@@ -17,15 +17,15 @@
 
 package it.cnr.iit.epas.helpdesk.service;
 
+import javax.activation.DataSource;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
 
 @RequiredArgsConstructor
 @Data
 public class FileAttachment {
 
   private final String fileName;
-  private final Resource resource;
+  private final DataSource dataSource;
 
 }

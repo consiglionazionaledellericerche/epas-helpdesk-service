@@ -20,7 +20,6 @@ package it.cnr.iit.epas.helpdesk.service;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.base.Verify;
-import com.google.common.io.ByteSource;
 import it.cnr.iit.epas.helpdesk.config.HelpdeskConfig;
 import it.cnr.iit.epas.helpdesk.dao.UserDao;
 import it.cnr.iit.epas.helpdesk.dto.v4.ReportData;
@@ -32,11 +31,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 import javax.mail.MessagingException;
+import javax.mail.util.ByteArrayDataSource;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -91,18 +90,18 @@ public class ReportMailerService {
       gz.write(data.getHtml().getBytes());
       gz.close();
 
-      val inputStreamHtml = ByteSource.wrap(htmlGz.toByteArray()).openStream();
-      InputStreamResource inputStreamResourceHtml = new InputStreamResource(inputStreamHtml);
+      ByteArrayDataSource attachmentHtml = new ByteArrayDataSource(htmlGz.toByteArray(), "application/octet-stream");
       FileAttachment originalHtml = 
-          new FileAttachment("page.html.gz", inputStreamResourceHtml);
+          new FileAttachment("page.html.gz", attachmentHtml);
+
       emailData.getAttachments().add(originalHtml);
     }
 
     if (data.getImg() != null) {
-      val inputStreamImg = ByteSource.wrap(data.getImg()).openStream();
-      InputStreamResource inputStreamResourceImg = new InputStreamResource(inputStreamImg);
-      FileAttachment img = new FileAttachment("image.png", inputStreamResourceImg);
+      ByteArrayDataSource attachmentImg = new ByteArrayDataSource(data.getImg(), "image/png");
+      FileAttachment img = new FileAttachment("image.png", attachmentImg);
       emailData.getAttachments().add(img);
+      
     }
 
     emailService.sendEmail(emailData);

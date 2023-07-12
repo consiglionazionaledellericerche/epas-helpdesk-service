@@ -46,7 +46,7 @@ public class MyBasicAuthenticationEntryPoint extends BasicAuthenticationEntryPoi
 
   @Override
   public void afterPropertiesSet() {
-    setRealmName("epas-service");
+    setRealmName("epas-helpdesk-service");
     super.afterPropertiesSet();
   }
 }

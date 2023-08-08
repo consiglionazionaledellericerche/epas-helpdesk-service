@@ -50,39 +50,40 @@ public class ReportMailerService {
   private final EmailService emailService;
 
   @Transactional
-  public void feedback(ReportData data, User user) throws MessagingException, IOException {
+  public void sendFeedback(ReportData data, Optional<User> user) throws MessagingException, IOException {
 
     Verify.verifyNotNull(data);
     Verify.verifyNotNull(user);
     EmailData emailData = new EmailData();
-    emailData.setFrom(config.getAdminEmail().getFrom());
+    emailData.setFrom(config.getEmail().getFrom());
     emailData.setBody(Optional.ofNullable(data.getNote()).orElse("Segnalazione utente"));
 
-    //boolean toPersonnelAdmin = false;
-
-    if (!userDao.hasAdminRoles(user)) {
-      if (user.getPerson() != null) {
-        emailData.setTo(userDao.getUsersWithRoles(user.getPerson().getOffice(), 
+    if (user.isPresent() && !userDao.hasAdminRoles(user.get())) {
+      if (user.get().getPerson() != null) {
+        emailData.setTo(userDao.getUsersWithRoles(user.get().getPerson().getOffice(), 
             Role.PERSONNEL_ADMIN).stream()
             .filter(u -> u.getPerson() != null).map(u -> u.getPerson().getEmail())
             .collect(Collectors.toList()));
-        //toPersonnelAdmin = true;
       }
     } else {
-      emailData.setTo(COMMAS.splitToList(config.getAdminEmail().getTo()));
+      emailData.setTo(COMMAS.splitToList(config.getEmail().getTo()));
     }
 
     if (emailData.getTo().isEmpty()) {
-      log.error("please correct {} in application.proporties", config.getAdminEmail().getTo());
+      log.error("please correct {} in application.proporties", config.getEmail().getTo());
       return;
     }
-    if (user.getPerson() != null
-        && !Strings.isNullOrEmpty(user.getPerson().getEmail())) {
-      emailData.setReplyTo(Optional.of(user.getPerson().getEmail()));
+    if (user.isPresent() && user.get().getPerson() != null
+        && !Strings.isNullOrEmpty(user.get().getPerson().getEmail())) {
+      emailData.setReplyTo(Optional.of(user.get().getPerson().getEmail()));
     }
-    val username = user.getPerson() != null 
-        ? user.getPerson().getFullname() : user.getUsername(); 
-    emailData.setSubject(String.format("%s: %s", config.getAdminEmail().getSubject(), username));
+    
+    val username = user.isPresent() 
+        ? user.get().getPerson() != null 
+          ? user.get().getPerson().getFullname() 
+              : user.get().getUsername() : "user unkwown";
+
+    emailData.setSubject(String.format("%s: %s", config.getEmail().getSubject(), username));
 
     if (data.getHtml() != null) {
       ByteArrayOutputStream htmlGz = new ByteArrayOutputStream();
@@ -105,7 +106,6 @@ public class ReportMailerService {
     }
 
     emailService.sendEmail(emailData);
-    //send(user, data, session, toPersonnelAdmin);
 
   }
 }

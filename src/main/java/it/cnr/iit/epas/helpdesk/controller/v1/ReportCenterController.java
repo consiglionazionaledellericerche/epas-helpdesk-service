@@ -29,8 +29,7 @@ import it.cnr.iit.epas.helpdesk.controller.v1.utils.ApiRoutes;
 import it.cnr.iit.epas.helpdesk.dto.v4.HelpdeskConfigShowDto;
 import it.cnr.iit.epas.helpdesk.dto.v4.ReportData;
 import it.cnr.iit.epas.helpdesk.dto.v4.mapper.HelpdeskConfigShowMapper;
-import it.cnr.iit.epas.helpdesk.security.SecureUtils;
-import it.cnr.iit.epas.helpdesk.service.ReportMailerService;
+import it.cnr.iit.epas.helpdesk.service.ReportCenterService;
 import java.io.IOException;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
@@ -61,8 +60,7 @@ public class ReportCenterController {
 
   private final HelpdeskConfig helpdeskConfig;
   private final HelpdeskConfigShowMapper configMapper;
-  private final ReportMailerService reportMailerService;
-  private final SecureUtils secureUtils;
+  private final ReportCenterService reportCenterService;
   
   @GetMapping("/config")
   public ResponseEntity<HelpdeskConfigShowDto> config() {
@@ -96,7 +94,7 @@ public class ReportCenterController {
   public ResponseEntity<Void> send(
       @NotNull @RequestBody @Valid ReportData reportData) throws MessagingException, IOException {
     log.info("Ricevuta richiesta di invio segnalazione {}", reportData);
-    reportMailerService.feedback(reportData, secureUtils.getCurrentUser().get());
+    reportCenterService.sendFeedback(reportData);
     return ResponseEntity.ok().build();
   }
 }

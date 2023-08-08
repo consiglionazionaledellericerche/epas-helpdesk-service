@@ -17,65 +17,25 @@
 
 package it.cnr.iit.epas.helpdesk.service;
 
-import com.google.common.base.Verify;
-import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Optional;
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Service;
+
 
 /**
- * Servizio per l'invio delle email contenenti le segnalazioni 
- * degli utenti.
+ * Interfaccia del servizio per l'invio delle email.
  *
  * @author Cristian Lucchesi
  *
  */
-@Slf4j
-@Service
-@RequiredArgsConstructor
-public class EmailService {
+public interface EmailService {
 
-  private final JavaMailSender mailSender;
+  void sendEmail(EmailData emailData) throws MessagingException;
 
-  public void sendEmail(EmailData emailData) throws MessagingException {
-    sendEmail(emailData.getTo(), emailData.getFrom(), emailData.getCc(), emailData.getReplyTo(),
-        emailData.getSubject(), emailData.getBody(), emailData.getAttachments());
-  }
+  void sendEmail(String to, String from, String subject, String body,
+      List<FileAttachment> attachments) throws MessagingException;
 
-  public void sendEmail(String to, String from, String subject, String body, 
-      List<FileAttachment> attachments) throws MessagingException {
-    sendEmail(Lists.newArrayList(to), from, Lists.newArrayList(), Optional.empty(), subject, body, attachments);
-  }
+  void sendEmail(List<String> to, String from, List<String> cc, Optional<String> replyTo,
+      String subject, String body, List<FileAttachment> attachments) throws MessagingException;
 
-  public void sendEmail(List<String> to, String from, List<String> cc, Optional<String> replyTo, 
-      String subject, String body, List<FileAttachment> attachments) throws MessagingException {
-    Verify.verifyNotNull(to);
-    Verify.verifyNotNull(subject);
-
-    MimeMessage message = mailSender.createMimeMessage();
-    MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-    helper.setTo(to.toArray(new String[0]));
-    helper.setSubject(subject);
-    helper.setFrom(from);
-    if (cc != null && !cc.isEmpty()) {
-      helper.setCc(cc.toArray(new String[0]));
-    }
-
-    helper.setText(body);
-
-    for (FileAttachment attachment : attachments) {
-      helper.addAttachment(attachment.getFileName(), attachment.getDataSource());
-    }
-
-    mailSender.send(message);
-    log.info("Inviata email a {}, from = {}, cc = {}, subject = {}, body = {}, "
-        + "attachments are present = {}", to, from, cc, subject, body, !attachments.isEmpty());
-  }
 }

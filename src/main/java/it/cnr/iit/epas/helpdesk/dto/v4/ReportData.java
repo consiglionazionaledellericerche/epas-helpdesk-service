@@ -17,6 +17,7 @@
 
 package it.cnr.iit.epas.helpdesk.dto.v4;
 
+import java.util.Map;
 import lombok.Data;
 
 /**
@@ -35,6 +36,7 @@ public class ReportData {
   private String note;
   private String url;
   private String category;
+  private Map<String, String> session;
   
   @Override
   public String toString() {

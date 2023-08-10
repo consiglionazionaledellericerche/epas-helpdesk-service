@@ -73,7 +73,7 @@ public class EmailServiceImpl implements EmailService {
       helper.setCc(cc.toArray(new String[0]));
     }
 
-    helper.setText(body);
+    helper.setText(body, true);
 
     for (FileAttachment attachment : attachments) {
       helper.addAttachment(attachment.getFileName(), attachment.getDataSource());

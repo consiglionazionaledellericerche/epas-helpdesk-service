@@ -56,7 +56,7 @@ public class ReportMailerService {
     Verify.verifyNotNull(user);
     EmailData emailData = new EmailData();
     emailData.setFrom(config.getEmail().getFrom());
-    emailData.setBody(Optional.ofNullable(data.getNote()).orElse("Segnalazione utente"));
+    emailData.setBody(feedbackTemplate(data, user));
 
     if (user.isPresent() && !userDao.hasAdminRoles(user.get())) {
       if (user.get().getPerson() != null) {
@@ -70,7 +70,7 @@ public class ReportMailerService {
     }
 
     if (emailData.getTo().isEmpty()) {
-      log.error("please correct {} in application.proporties", config.getEmail().getTo());
+      log.error("please correct {} in application.properties", config.getEmail().getTo());
       return;
     }
     if (user.isPresent() && user.get().getPerson() != null
@@ -102,10 +102,45 @@ public class ReportMailerService {
       ByteArrayDataSource attachmentImg = new ByteArrayDataSource(data.getImg(), "image/png");
       FileAttachment img = new FileAttachment("image.png", attachmentImg);
       emailData.getAttachments().add(img);
-      
     }
 
     emailService.sendEmail(emailData);
+  }
 
+  public String userTemplate(Optional<User> user) {
+    if (!user.isPresent()) {
+      return "";
+    }
+    String template = 
+        """
+        <p>Utente: %s</p>
+        <p>Sede: %s</p>
+        """;
+    return String.format(template, user.get().getUsername(), 
+        user.get().getPerson() != null 
+        ? user.get().getPerson().getOffice().getName() 
+            : user.get().getOwner());
+    }
+
+  public String feedbackTemplate(ReportData data, Optional<User> user) {
+    String template =
+        """
+        <html>
+          <head><title>%s</title></head>
+          <body>
+            <p>
+              Descrizione: <br/>
+              %s
+            </p>
+            <p>URL: <a href="%s">%s</a></p>
+            %s
+            <p>User Agent:
+              %s
+            </p>
+          </body>
+        </html>
+        """;
+    return String.format(template, config.getEmail().getSubject(), data.getNote(), data.getUrl(), 
+        data.getUrl(), userTemplate(user), data.getBrowser().getUserAgent());
   }
 }

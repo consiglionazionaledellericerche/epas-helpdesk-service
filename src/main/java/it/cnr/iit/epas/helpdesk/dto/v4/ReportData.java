@@ -17,8 +17,8 @@
 
 package it.cnr.iit.epas.helpdesk.dto.v4;
 
+import java.util.Map;
 import lombok.Data;
-import lombok.ToString;
 
 /**
  * Dati prelevati via json dalle segnalazioni degli utenti.
@@ -28,7 +28,6 @@ import lombok.ToString;
  * @author Dario Tagliaferri
  */
 @Data
-@ToString(exclude = {"img"})
 public class ReportData {
 
   private BrowserData browser;
@@ -37,4 +36,12 @@ public class ReportData {
   private String note;
   private String url;
   private String category;
+  private Map<String, String> session;
+  
+  @Override
+  public String toString() {
+    return String.format("ReportData[BrowserData=%s, url=%s, category=%s, html.size()=%s,"
+        + " img.size()=%s, note=%s]", browser, url, category, html != null ? html.length() : 0,
+            img != null ? img.length : 0, note);
+  }
 }

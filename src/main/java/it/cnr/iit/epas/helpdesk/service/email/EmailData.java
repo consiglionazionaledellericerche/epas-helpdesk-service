@@ -15,17 +15,21 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.helpdesk.service;
+package it.cnr.iit.epas.helpdesk.service.email;
 
-import javax.activation.DataSource;
+import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.Optional;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Data
-public class FileAttachment {
+public class EmailData {
 
-  private final String fileName;
-  private final DataSource dataSource;
-
+  private String from = null;
+  private List<String> to = Lists.newArrayList();
+  private List<String> cc = Lists.newArrayList();
+  private Optional<String> replyTo = Optional.empty();
+  private String subject = null;
+  private String body;
+  private List<FileAttachment> attachments = Lists.newArrayList();
 }

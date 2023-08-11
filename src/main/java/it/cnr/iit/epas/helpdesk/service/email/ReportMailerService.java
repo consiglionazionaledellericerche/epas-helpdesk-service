@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.helpdesk.service;
+package it.cnr.iit.epas.helpdesk.service.email;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -48,41 +48,46 @@ public class ReportMailerService {
   private final UserDao userDao;
   private final HelpdeskConfig config;
   private final EmailService emailService;
+  private final EmailTemplate emailTemplate;
 
   @Transactional
-  public void feedback(ReportData data, User user) throws MessagingException, IOException {
+  public void sendFeedback(ReportData data, Optional<User> user) throws MessagingException, IOException {
 
     Verify.verifyNotNull(data);
     Verify.verifyNotNull(user);
     EmailData emailData = new EmailData();
-    emailData.setFrom(config.getAdminEmail().getFrom());
-    emailData.setBody(Optional.ofNullable(data.getNote()).orElse("Segnalazione utente"));
+    emailData.setFrom(config.getEmail().getFrom());
 
-    //boolean toPersonnelAdmin = false;
-
-    if (!userDao.hasAdminRoles(user)) {
-      if (user.getPerson() != null) {
-        emailData.setTo(userDao.getUsersWithRoles(user.getPerson().getOffice(), 
+    boolean toPersonnelAdmin = false;
+    if (user.isPresent() && !userDao.hasAdminRoles(user.get())) {
+      if (user.get().getPerson() != null) {
+        emailData.setTo(userDao.getUsersWithRoles(user.get().getPerson().getOffice(), 
             Role.PERSONNEL_ADMIN).stream()
             .filter(u -> u.getPerson() != null).map(u -> u.getPerson().getEmail())
             .collect(Collectors.toList()));
-        //toPersonnelAdmin = true;
+        toPersonnelAdmin = true;
       }
     } else {
-      emailData.setTo(COMMAS.splitToList(config.getAdminEmail().getTo()));
+      emailData.setTo(COMMAS.splitToList(config.getEmail().getTo()));
     }
 
+    emailData.setBody(emailTemplate.feedbackTemplate(data, user, toPersonnelAdmin));
+
     if (emailData.getTo().isEmpty()) {
-      log.error("please correct {} in application.proporties", config.getAdminEmail().getTo());
+      log.error("please correct {} in application.properties", config.getEmail().getTo());
       return;
     }
-    if (user.getPerson() != null
-        && !Strings.isNullOrEmpty(user.getPerson().getEmail())) {
-      emailData.setReplyTo(Optional.of(user.getPerson().getEmail()));
+    if (user.isPresent() && user.get().getPerson() != null
+        && !Strings.isNullOrEmpty(user.get().getPerson().getEmail())) {
+      emailData.setReplyTo(Optional.of(user.get().getPerson().getEmail()));
     }
-    val username = user.getPerson() != null 
-        ? user.getPerson().getFullname() : user.getUsername(); 
-    emailData.setSubject(String.format("%s: %s", config.getAdminEmail().getSubject(), username));
+    
+    val username = user.isPresent() 
+        ? user.get().getPerson() != null 
+          ? user.get().getPerson().getFullname() 
+              : user.get().getUsername() : "user unkwown";
+
+    emailData.setSubject(String.format("%s: %s", config.getEmail().getSubject(), username));
 
     if (data.getHtml() != null) {
       ByteArrayOutputStream htmlGz = new ByteArrayOutputStream();
@@ -101,11 +106,8 @@ public class ReportMailerService {
       ByteArrayDataSource attachmentImg = new ByteArrayDataSource(data.getImg(), "image/png");
       FileAttachment img = new FileAttachment("image.png", attachmentImg);
       emailData.getAttachments().add(img);
-      
     }
 
     emailService.sendEmail(emailData);
-    //send(user, data, session, toPersonnelAdmin);
-
   }
 }

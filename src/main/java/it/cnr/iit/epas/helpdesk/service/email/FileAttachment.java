@@ -15,17 +15,17 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.helpdesk.dto.v4;
+package it.cnr.iit.epas.helpdesk.service.email;
 
-import it.cnr.iit.epas.helpdesk.config.HelpdeskConfig.Email;
-import it.cnr.iit.epas.helpdesk.config.HelpdeskConfig.Oil;
+import javax.activation.DataSource;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 @Data
-public class HelpdeskConfigShowDto {
+public class FileAttachment {
 
-  //Configurazioni relative ad OIL.
-  private Oil oil = new Oil();
-  private Email email = new Email();
+  private final String fileName;
+  private final DataSource dataSource;
 
 }

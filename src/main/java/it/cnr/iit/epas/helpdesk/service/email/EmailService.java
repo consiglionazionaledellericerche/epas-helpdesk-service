@@ -15,17 +15,27 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.helpdesk.dto.v4;
+package it.cnr.iit.epas.helpdesk.service.email;
 
-import it.cnr.iit.epas.helpdesk.config.HelpdeskConfig.Email;
-import it.cnr.iit.epas.helpdesk.config.HelpdeskConfig.Oil;
-import lombok.Data;
+import java.util.List;
+import java.util.Optional;
+import javax.mail.MessagingException;
 
-@Data
-public class HelpdeskConfigShowDto {
 
-  //Configurazioni relative ad OIL.
-  private Oil oil = new Oil();
-  private Email email = new Email();
+/**
+ * Interfaccia del servizio per l'invio delle email.
+ *
+ * @author Cristian Lucchesi
+ *
+ */
+public interface EmailService {
+
+  void sendEmail(EmailData emailData) throws MessagingException;
+
+  void sendEmail(String to, String from, String subject, String body,
+      List<FileAttachment> attachments) throws MessagingException;
+
+  void sendEmail(List<String> to, String from, List<String> cc, Optional<String> replyTo,
+      String subject, String body, List<FileAttachment> attachments) throws MessagingException;
 
 }

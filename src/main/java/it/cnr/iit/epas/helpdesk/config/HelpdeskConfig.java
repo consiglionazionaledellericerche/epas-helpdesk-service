@@ -17,12 +17,15 @@
 
 package it.cnr.iit.epas.helpdesk.config;
 
+import com.google.common.collect.Maps;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -44,6 +47,7 @@ public class HelpdeskConfig implements Serializable {
   /**
    * Bean per le info relative ad OIL.
    */
+  @Slf4j
   @Data
   @ToString
   public static class Oil {
@@ -51,7 +55,24 @@ public class HelpdeskConfig implements Serializable {
     private boolean enabled = false;
     private String baseUrl = "http://epas-helpdesk-service:8080/rest/v1";
     private String createPath = "/";
-    
+    private String categories = "50:Problemi Tecnici - ePAS,51:Problemi Amministrativi - ePAS";
+
+    public Map<String, String> categoryMap() {
+      String oilCategories = categories;
+      Map<String, String> categoryMap = Maps.newLinkedHashMap();
+      if (oilCategories != null && !oilCategories.isEmpty()) {
+        for (String category : oilCategories.split(",")) {
+          String[] categoryFields = category.split(":");
+          if (categoryFields.length == 2) {
+            categoryMap.put(categoryFields[0], categoryFields[1]);
+          } else {
+            log.warn("Categoria di segnalazione oil %s non specificata correttamente.", category);
+          }
+        }
+      }
+      return categoryMap;
+    }
+
     public URL getOilCreateUrl() throws MalformedURLException {
       return new URL(new URL(baseUrl), createPath);
     }
@@ -63,11 +84,12 @@ public class HelpdeskConfig implements Serializable {
    */
   @Data
   @ToString
-  public static class AdminEmail {
+  public static class Email {
 
     /**
      * È possibile configurare l'email inserendo questi parametri nella configurazione del play.
      */
+    private boolean enabled = false;
     private String to = "epas@iit.cnr.it";
     private String from = "segnalazioni@epas.tools.iit.cnr.it";
     private String subject = "Segnalazione ePAS";
@@ -75,6 +97,6 @@ public class HelpdeskConfig implements Serializable {
 
   //Configurazioni relative ad OIL.
   private Oil oil = new Oil();
-  private AdminEmail adminEmail = new AdminEmail();
+  private Email email = new Email();
 
 }

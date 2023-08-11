@@ -18,14 +18,19 @@
 package it.cnr.iit.epas.helpdesk.dto.v4;
 
 import it.cnr.iit.epas.helpdesk.config.HelpdeskConfig.Email;
-import it.cnr.iit.epas.helpdesk.config.HelpdeskConfig.Oil;
 import lombok.Data;
 
+/**
+ * Informazioni sulla configurazione esportate via JSON.
+ *
+ * @author Cristian Lucchesi
+ */
 @Data
 public class HelpdeskConfigShowDto {
 
   //Configurazioni relative ad OIL.
-  private Oil oil = new Oil();
+  private OIlShowDto oil = new OIlShowDto();
+  //Configurazioni relative all'invio delle email.
   private Email email = new Email();
 
 }

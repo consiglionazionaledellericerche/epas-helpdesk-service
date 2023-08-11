@@ -19,8 +19,6 @@ package it.cnr.iit.epas.helpdesk.config;
 
 import com.google.common.collect.Maps;
 import java.io.Serializable;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Map;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -53,9 +51,12 @@ public class HelpdeskConfig implements Serializable {
   public static class Oil {
 
     private boolean enabled = false;
-    private String baseUrl = "http://epas-helpdesk-service:8080/rest/v1";
-    private String createPath = "/";
+    private String url = "http://helpwildfly.si.cnr.it:8080";
+    private String instance = "HDSiper";
     private String categories = "50:Problemi Tecnici - ePAS,51:Problemi Amministrativi - ePAS";
+    private String fixedCategory;
+    private String username;
+    private String password;
 
     public Map<String, String> categoryMap() {
       String oilCategories = categories;
@@ -73,9 +74,6 @@ public class HelpdeskConfig implements Serializable {
       return categoryMap;
     }
 
-    public URL getOilCreateUrl() throws MalformedURLException {
-      return new URL(new URL(baseUrl), createPath);
-    }
   }
 
   /**

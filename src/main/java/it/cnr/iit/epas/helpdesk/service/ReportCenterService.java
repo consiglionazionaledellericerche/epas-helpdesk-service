@@ -45,11 +45,12 @@ public class ReportCenterService {
     val currentUser = secureUtils.getCurrentUser();
 
     if (config.getOil().isEnabled() && currentUser.isPresent()) {
-      if (userDao.hasAdminRoles(currentUser.get())) {
-        oilService.sendFeedback(data, currentUser.get());
-        log.info("Inviata segnalazione ad OIL. Utente {}. Categoria: '{}'. Url: {}. Note: {}", 
-            currentUser.get().getUsername(), config.getOil().categoryMap().get(data.getCategory()), 
+      if (userDao.hasAdminRoles(currentUser.get()) && currentUser.get().getPerson() != null) {
+        log.info("Invio ad OIL la segnalazione. Utente {}. Categoria: '{} (id={})'. Url: {}. Note: {}", 
+            currentUser.get().getUsername(),
+            config.getOil().categoryMap().get(data.getCategory()), data.getCategory(),
             data.getUrl(), data.getNote());
+        oilService.sendFeedback(data, currentUser.get().getPerson());
       } else {
         reportMailerService.sendFeedback(data, currentUser);
       }

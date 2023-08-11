@@ -15,23 +15,22 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.helpdesk.dto.v4.mapper;
+package it.cnr.iit.epas.helpdesk.dto.v4;
 
-import it.cnr.iit.epas.helpdesk.config.HelpdeskConfig;
-import it.cnr.iit.epas.helpdesk.config.HelpdeskConfig.Oil;
-import it.cnr.iit.epas.helpdesk.dto.v4.HelpdeskConfigShowDto;
-import it.cnr.iit.epas.helpdesk.dto.v4.OIlShowDto;
-import org.mapstruct.Mapper;
+import lombok.Data;
 
 /**
- * Mapper per HelpdeskConfig al corrispondente DTO per la visualizzazione via REST.
+ * Informazioni sulla configurazione dell'integrazione con OIL esportate via JSON.
  *
  * @author Cristian Lucchesi
  */
-@Mapper(componentModel = "spring")
-public interface HelpdeskConfigShowMapper {
+@Data
+public class OIlShowDto {
 
-  HelpdeskConfigShowDto convert(HelpdeskConfig config);
+  private boolean enabled = false;
+  private String url;
+  private String instance;
+  private String categories;
+  private String fixedCategory;
 
-  OIlShowDto convert(Oil oil);
 }

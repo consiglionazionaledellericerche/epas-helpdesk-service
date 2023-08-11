@@ -15,22 +15,27 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.helpdesk.service;
+package it.cnr.iit.epas.helpdesk.service.email;
 
-import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Optional;
-import lombok.Data;
+import javax.mail.MessagingException;
 
-@Data
-public class EmailData {
 
-  private String from = null;
-  private List<String> to = Lists.newArrayList();
-  private List<String> cc = Lists.newArrayList();
-  private Optional<String> replyTo = Optional.empty();
-  private String subject = null;
-  private String body;
-  private List<FileAttachment> attachments = Lists.newArrayList();
+/**
+ * Interfaccia del servizio per l'invio delle email.
+ *
+ * @author Cristian Lucchesi
+ *
+ */
+public interface EmailService {
+
+  void sendEmail(EmailData emailData) throws MessagingException;
+
+  void sendEmail(String to, String from, String subject, String body,
+      List<FileAttachment> attachments) throws MessagingException;
+
+  void sendEmail(List<String> to, String from, List<String> cc, Optional<String> replyTo,
+      String subject, String body, List<FileAttachment> attachments) throws MessagingException;
 
 }

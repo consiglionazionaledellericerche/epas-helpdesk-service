@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.helpdesk.service;
+package it.cnr.iit.epas.helpdesk.service.email;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -48,6 +48,7 @@ public class ReportMailerService {
   private final UserDao userDao;
   private final HelpdeskConfig config;
   private final EmailService emailService;
+  private final EmailTemplate emailTemplate;
 
   @Transactional
   public void sendFeedback(ReportData data, Optional<User> user) throws MessagingException, IOException {
@@ -56,18 +57,21 @@ public class ReportMailerService {
     Verify.verifyNotNull(user);
     EmailData emailData = new EmailData();
     emailData.setFrom(config.getEmail().getFrom());
-    emailData.setBody(feedbackTemplate(data, user));
 
+    boolean toPersonnelAdmin = false;
     if (user.isPresent() && !userDao.hasAdminRoles(user.get())) {
       if (user.get().getPerson() != null) {
         emailData.setTo(userDao.getUsersWithRoles(user.get().getPerson().getOffice(), 
             Role.PERSONNEL_ADMIN).stream()
             .filter(u -> u.getPerson() != null).map(u -> u.getPerson().getEmail())
             .collect(Collectors.toList()));
+        toPersonnelAdmin = true;
       }
     } else {
       emailData.setTo(COMMAS.splitToList(config.getEmail().getTo()));
     }
+
+    emailData.setBody(emailTemplate.feedbackTemplate(data, user, toPersonnelAdmin));
 
     if (emailData.getTo().isEmpty()) {
       log.error("please correct {} in application.properties", config.getEmail().getTo());
@@ -105,42 +109,5 @@ public class ReportMailerService {
     }
 
     emailService.sendEmail(emailData);
-  }
-
-  public String userTemplate(Optional<User> user) {
-    if (!user.isPresent()) {
-      return "";
-    }
-    String template = 
-        """
-        <p>Utente: %s</p>
-        <p>Sede: %s</p>
-        """;
-    return String.format(template, user.get().getUsername(), 
-        user.get().getPerson() != null 
-        ? user.get().getPerson().getOffice().getName() 
-            : user.get().getOwner());
-    }
-
-  public String feedbackTemplate(ReportData data, Optional<User> user) {
-    String template =
-        """
-        <html>
-          <head><title>%s</title></head>
-          <body>
-            <p>
-              Descrizione: <br/>
-              %s
-            </p>
-            <p>URL: <a href="%s">%s</a></p>
-            %s
-            <p>User Agent:
-              %s
-            </p>
-          </body>
-        </html>
-        """;
-    return String.format(template, config.getEmail().getSubject(), data.getNote(), data.getUrl(), 
-        data.getUrl(), userTemplate(user), data.getBrowser().getUserAgent());
   }
 }

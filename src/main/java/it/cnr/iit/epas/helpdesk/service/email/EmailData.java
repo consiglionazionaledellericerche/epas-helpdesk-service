@@ -15,19 +15,21 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.helpdesk.service;
+package it.cnr.iit.epas.helpdesk.service.email;
 
-import it.cnr.iit.epas.helpdesk.dto.v4.ReportData;
-import it.cnr.iit.epas.helpdesk.models.User;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.Optional;
+import lombok.Data;
 
-@Slf4j
-@Service
-public class OilService {
+@Data
+public class EmailData {
 
-  public void sendFeedback(ReportData data, User currentUser) {
-    log.info("Inviato ad OIL il feedback dell'utente {}, con i seguenti dati {}", 
-        currentUser, data);
-  }
+  private String from = null;
+  private List<String> to = Lists.newArrayList();
+  private List<String> cc = Lists.newArrayList();
+  private Optional<String> replyTo = Optional.empty();
+  private String subject = null;
+  private String body;
+  private List<FileAttachment> attachments = Lists.newArrayList();
 }

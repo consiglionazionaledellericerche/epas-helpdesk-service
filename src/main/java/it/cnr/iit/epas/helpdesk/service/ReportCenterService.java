@@ -21,6 +21,8 @@ import it.cnr.iit.epas.helpdesk.config.HelpdeskConfig;
 import it.cnr.iit.epas.helpdesk.dao.UserDao;
 import it.cnr.iit.epas.helpdesk.dto.v4.ReportData;
 import it.cnr.iit.epas.helpdesk.security.SecureUtils;
+import it.cnr.iit.epas.helpdesk.service.email.ReportMailerService;
+import it.cnr.iit.epas.helpdesk.service.oil.OilService;
 import java.io.IOException;
 import javax.mail.MessagingException;
 import lombok.RequiredArgsConstructor;

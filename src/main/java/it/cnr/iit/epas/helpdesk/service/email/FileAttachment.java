@@ -15,27 +15,17 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.helpdesk.service;
+package it.cnr.iit.epas.helpdesk.service.email;
 
-import java.util.List;
-import java.util.Optional;
-import javax.mail.MessagingException;
+import javax.activation.DataSource;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@Data
+public class FileAttachment {
 
-/**
- * Interfaccia del servizio per l'invio delle email.
- *
- * @author Cristian Lucchesi
- *
- */
-public interface EmailService {
-
-  void sendEmail(EmailData emailData) throws MessagingException;
-
-  void sendEmail(String to, String from, String subject, String body,
-      List<FileAttachment> attachments) throws MessagingException;
-
-  void sendEmail(List<String> to, String from, List<String> cc, Optional<String> replyTo,
-      String subject, String body, List<FileAttachment> attachments) throws MessagingException;
+  private final String fileName;
+  private final DataSource dataSource;
 
 }

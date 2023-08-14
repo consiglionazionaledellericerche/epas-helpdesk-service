@@ -18,51 +18,41 @@
 package it.cnr.iit.epas.helpdesk.service.oil;
 
 import feign.Feign;
-import feign.Headers;
-import feign.Param;
-import feign.RequestLine;
 import feign.auth.BasicAuthRequestInterceptor;
+import feign.form.FormEncoder;
+import feign.gson.GsonDecoder;
 import feign.gson.GsonEncoder;
 import it.cnr.iit.epas.helpdesk.config.HelpdeskConfig;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+/**
+ * Builder per costruire un'istanza del client di OIL configurata.
+ *
+ * @author Cristian Lucchesi
+ *
+ */
 @RequiredArgsConstructor
-@Component
-public class OilServiceClient {
+@Configuration
+public class OilBulder {
 
   private final HelpdeskConfig config;
 
   /**
-   * API per l'epas-helpdesk-service.
+   * Costruisce l'istance del client OIL con impostati i parametri 
+   * di configurazione e le dipendenze necessario per l'autenticazione
+   * e per l'invio delle immagini com multipart/form-data.
    */
-  interface OilClient {
-
-    @Headers("Content-Type: application/json")
-    @RequestLine("PUT /rest/pest/{instance}")
-    String send(OilCreateDto oilCreateDto, @Param("instance") String instance);
-
-    @Headers("Content-Type: multipart/form-data")
-    @RequestLine("POST /rest/pest/{instance}/{id}")
-    void addAttachment(MultipartFile attachment,
-        @Param("instance") String instance, @Param("id") String id);
-  }
-
-  private OilClient oilClient() {
+  @Bean
+  public Oil oil() {
     return Feign.builder()
         .requestInterceptor(
             new BasicAuthRequestInterceptor(
-                config.getOil().getUsername(), config.getOil().getPassword()))
-        .encoder(new GsonEncoder())
-        .target(OilClient.class, config.getOil().getUrl());
-  }
-  
-  public String send(OilCreateDto oilCreateDto) {
-    return oilClient().send(oilCreateDto, config.getOil().getInstance());
-  }
-  
-  public void addAttachment(String id, MultipartFile attachment) {
-    oilClient().addAttachment(attachment, config.getOil().getInstance(), id);
+                config.getOil().getUsername(), 
+                config.getOil().getPassword()))
+        .encoder(new FormEncoder(new GsonEncoder()))
+        .decoder(new GsonDecoder())
+        .target(Oil.class, config.getOil().getUrl());
   }
 }

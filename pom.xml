@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.13</version>
+		<version>2.7.14</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>it.cnr.iit.epas.helpdesk</groupId>
@@ -23,6 +23,7 @@
 		<jib.maven-plugin.version>3.3.2</jib.maven-plugin.version>
 		<feign.version>12.4</feign.version>
 		<feign-form.version>3.8.0</feign-form.version>
+		<starter.openfeign.version>3.1.8</starter.openfeign.version>
 	</properties>
 	<profiles>
 		<profile>
@@ -117,51 +118,18 @@
 		</dependency>
 		<!-- Fine QueryDsl -->
 		<dependency>
-			<groupId>com.google.inject.extensions</groupId>
-			<artifactId>guice-assistedinject</artifactId>
-			<version>5.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-email</artifactId>
-			<version>1.5</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjweaver</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.github.openfeign</groupId>
-			<artifactId>feign-core</artifactId>
-			<version>${feign.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>io.github.openfeign.form</groupId>
-			<artifactId>feign-form</artifactId>
+			<artifactId>feign-form-spring</artifactId>
 			<version>${feign-form.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+			<version>${starter.openfeign.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.openfeign</groupId>
 			<artifactId>feign-gson</artifactId>
-			<version>${feign.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.github.openfeign</groupId>
-			<artifactId>feign-slf4j</artifactId>
-			<version>${feign.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.github.openfeign</groupId>
-			<artifactId>feign-okhttp</artifactId>
 			<version>${feign.version}</version>
 		</dependency>
 		<dependency>
@@ -275,7 +243,7 @@
 					<from><image>eclipse-temurin:17-jre@sha256:4d1030a58659e0fdd77bf0880f28095344f37785d020527340caf937c49e3098</image></from>
 					<container>
 						<creationTime>USE_CURRENT_TIMESTAMP</creationTime>
-						<mainClass>it.cnr.iit.epas.EpasApplication</mainClass>
+						<mainClass>it.cnr.iit.epas.helpdesk.HelpdeskServiceApplication</mainClass>
 					</container>
 				</configuration>
 			</plugin>

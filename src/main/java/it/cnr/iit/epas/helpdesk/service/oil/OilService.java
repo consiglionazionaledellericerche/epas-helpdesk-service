@@ -17,10 +17,13 @@
 
 package it.cnr.iit.epas.helpdesk.service.oil;
 
+import feign.form.FormData;
 import it.cnr.iit.epas.helpdesk.config.HelpdeskConfig;
 import it.cnr.iit.epas.helpdesk.dto.v4.ReportData;
 import it.cnr.iit.epas.helpdesk.models.Person;
+import it.cnr.iit.epas.helpdesk.service.FileUtils;
 import it.cnr.iit.epas.helpdesk.service.oil.OilCreateDto.ConfirmOption;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +35,30 @@ import org.springframework.stereotype.Service;
 @Service
 public class OilService {
 
-  private final OilServiceClient oilServiceClient;
   private final HelpdeskConfig config;
-  
+  private final Oil oil;
+
   public void sendFeedback(ReportData data, Person currentPerson) {
     OilCreateDto oilData = buildOilCreateData(data, currentPerson);
-    String idSegnalazione = oilServiceClient.send(oilData);
+    Long idSegnalazione = oil.newProblem(oilData, config.getOil().getInstance()); 
     log.info("Inviato ad OIL il feedback (id = {}) della persona {}, con i seguenti dati {}", 
-        currentPerson.getFullname(), idSegnalazione, oilData);
+        idSegnalazione, currentPerson.getFullname(), oilData);
+    addAttachment(idSegnalazione, new FormData("image/png", "image.png", data.getImg()));
+    try {
+      addAttachment(idSegnalazione, 
+          new FormData(
+              "application/octet-stream", "page.html.gz", FileUtils.gzipText(data.getHtml())));
+      addAttachment(idSegnalazione, 
+          new FormData("application/octet-stream", "debug.txt.gz", FileUtils.debugFile(data)));
+    } catch (IOException e) {
+      log.error("Problema durante l'invio degli attachment per la segnalazione id = {}", idSegnalazione, e);
+    }
+  }
+
+  public void addAttachment(Long idSegnalazione, FormData formData) {
+    oil.addAttachment(idSegnalazione, formData, config.getOil().getInstance());
+    log.info("Aggiunto su OIL file {} ({}) alla segnalazione id = {}", 
+        formData.getFileName(), formData.getContentType(), idSegnalazione);
   }
 
   private OilCreateDto buildOilCreateData(ReportData data, Person currentPerson) {

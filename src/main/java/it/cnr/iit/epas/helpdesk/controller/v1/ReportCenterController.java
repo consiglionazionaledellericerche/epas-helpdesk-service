@@ -61,7 +61,7 @@ public class ReportCenterController {
   private final HelpdeskConfig helpdeskConfig;
   private final HelpdeskConfigShowMapper configMapper;
   private final ReportCenterService reportCenterService;
-  
+
   @GetMapping("/config")
   public ResponseEntity<HelpdeskConfigShowDto> config() {
     log.debug("Ricevuta richiesta visualizzazione della configurazione {}", helpdeskConfig);
@@ -97,4 +97,5 @@ public class ReportCenterController {
     reportCenterService.sendFeedback(reportData);
     return ResponseEntity.ok().build();
   }
+
 }

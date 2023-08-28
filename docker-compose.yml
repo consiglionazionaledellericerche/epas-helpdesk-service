@@ -8,7 +8,7 @@ version: "3.3"
 
 services:
   epas-helpdesk-service:
-    image: docker pull ghcr.io/consiglionazionaledellericerche/epas-helpdesk-service:latest
+    image: ghcr.io/consiglionazionaledellericerche/epas-helpdesk-service:latest
     container_name: epas-helpdesk-service
     ports:
       - 8080:8080

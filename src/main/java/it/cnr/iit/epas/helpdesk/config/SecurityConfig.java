@@ -61,15 +61,17 @@ public class SecurityConfig {
     http.csrf().disable();
     http.cors();
 
+    //Lo swagger è utilizzabile da tutti, anche gli utenti anonimi.
+    //L'invio è permesso a tutti perché ci possono essere segnalazioni da utenti non 
+    //ancora autenticati.
+    http.authorizeRequests()
+      .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/rest/v1/reportcenter/send").permitAll();
+
     http.authorizeRequests(authz -> authz.antMatchers("/rest/**").authenticated());
     if (securityConfig.getOauth2().isResourceserverEnabled()) {
       http.oauth2ResourceServer(oauth2 -> oauth2.jwt());
     }
     http.httpBasic().realmName("epas-helpdesk-service").authenticationEntryPoint(authenticationEntryPoint);
-
-    //Lo swagger è utilizzabile da tutti, anche gli utenti anonimi.
-    http.authorizeRequests()
-      .antMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll();
 
     return http.build();
   }

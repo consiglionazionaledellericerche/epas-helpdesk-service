@@ -49,7 +49,7 @@ public class EmailTemplate {
              %s
            </p>
            %s
-        """, data.getBrowser().getUserAgent(), 
+        """, data.getBrowser() != null ? data.getBrowser().getUserAgent() : "not available", 
         sessionTemplate(data.getSession()));
   }
 
@@ -57,7 +57,7 @@ public class EmailTemplate {
    * Template per mostrare l'elenco delle proprietà in sessione.
    */
   public String sessionTemplate(Map<String, String> session) {
-    if (session.isEmpty()) {
+    if (session == null || session.isEmpty()) {
       return "";
     }
     StringBuffer template = new StringBuffer("<div>Session:<dl>");
@@ -100,13 +100,21 @@ public class EmailTemplate {
               Descrizione: <br/>
               %s
             </p>
-            <p>URL: <a href="%s">%s</a></p>
+            %s
             %s
             %s
           </body>
         </html>
         """;
-    return String.format(template, config.getEmail().getSubject(), data.getNote(), data.getUrl(), 
-        data.getUrl(), userTemplate(user), toPersonnelAdmin ? null : debugTemplate(data));
+    return String.format(template, config.getEmail().getSubject(), data.getNote(), getUrl(data), 
+        userTemplate(user), toPersonnelAdmin ? "" : debugTemplate(data));
+  }
+
+  public String getUrl(ReportData reportData) {
+    if (reportData.getUrl() == null) {
+      return "";
+    }
+    return String.format("<p>URL: <a href=\"%s\">%s</a></p>", 
+        reportData.getUrl(), reportData.getUrl());
   }
 }

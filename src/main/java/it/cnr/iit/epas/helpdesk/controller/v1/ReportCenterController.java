@@ -36,6 +36,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -87,14 +88,20 @@ public class ReportCenterController {
       @ApiResponse(responseCode = "400", description = "dati segnalazione non corretti"),
       @ApiResponse(responseCode = "403", 
         description = "autenticazione non presente o utente che ha effettuato"
-            + " la richiesta non autorizzato ad effettuare segnalazioni") 
+            + " la richiesta non autorizzato ad effettuare segnalazioni"),
+      @ApiResponse(responseCode = "500", 
+        description = "problema nell'invio della segnalazione (invio email oppure OIL non"
+            + " funzionanti oppure parametri mancanti (es. email.to)") 
   })
   @Transactional
   @PutMapping("/send")
   public ResponseEntity<Void> send(
       @NotNull @RequestBody @Valid ReportData reportData) throws MessagingException, IOException {
     log.info("Ricevuta richiesta di invio segnalazione {}", reportData);
-    reportCenterService.sendFeedback(reportData);
+    val sent = reportCenterService.sendFeedback(reportData);
+    if (!sent) {
+      return ResponseEntity.internalServerError().build();
+    }
     return ResponseEntity.ok().build();
   }
 

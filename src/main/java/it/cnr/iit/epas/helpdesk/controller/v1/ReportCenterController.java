@@ -63,6 +63,15 @@ public class ReportCenterController {
   private final HelpdeskConfigShowMapper configMapper;
   private final ReportCenterService reportCenterService;
 
+  @Operation(
+      summary = "Mostra le informazioni principali della configurazione del servizio.",
+      description = "Le informazioni mostrare riguardano principalmente la configurazione"
+          + " dell'invio delle email e dell'integrazione con OIL (per il CNR).")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "configurazione restituita correttamente"),
+      @ApiResponse(responseCode = "403", 
+        description = "autenticazione non presente") 
+  })
   @GetMapping("/config")
   public ResponseEntity<HelpdeskConfigShowDto> config() {
     log.debug("Ricevuta richiesta visualizzazione della configurazione {}", helpdeskConfig);

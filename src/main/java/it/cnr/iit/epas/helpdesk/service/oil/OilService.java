@@ -38,7 +38,7 @@ public class OilService {
   private final HelpdeskConfig config;
   private final Oil oil;
 
-  public void sendFeedback(ReportData data, Person currentPerson) {
+  public boolean sendFeedback(ReportData data, Person currentPerson) {
     OilCreateDto oilData = buildOilCreateData(data, currentPerson);
     Long idSegnalazione = oil.newProblem(oilData, config.getOil().getInstance()); 
     log.info("Inviato ad OIL il feedback (id = {}) della persona {}, con i seguenti dati {}", 
@@ -52,7 +52,9 @@ public class OilService {
           new FormData("application/octet-stream", "debug.txt.gz", FileUtils.debugFile(data)));
     } catch (IOException e) {
       log.error("Problema durante l'invio degli attachment per la segnalazione id = {}", idSegnalazione, e);
+      return false;
     }
+    return true;
   }
 
   public void addAttachment(Long idSegnalazione, FormData formData) {

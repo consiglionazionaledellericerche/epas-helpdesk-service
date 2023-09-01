@@ -51,7 +51,7 @@ public class ReportMailerService {
   private final EmailTemplate emailTemplate;
 
   @Transactional
-  public void sendFeedback(ReportData data, Optional<User> user) throws MessagingException, IOException {
+  public boolean sendFeedback(ReportData data, Optional<User> user) throws MessagingException, IOException {
 
     Verify.verifyNotNull(data);
     Verify.verifyNotNull(user);
@@ -75,7 +75,7 @@ public class ReportMailerService {
 
     if (emailData.getTo().isEmpty()) {
       log.error("please correct {} in application.properties", config.getEmail().getTo());
-      return;
+      return false;
     }
     if (user.isPresent() && user.get().getPerson() != null
         && !Strings.isNullOrEmpty(user.get().getPerson().getEmail())) {
@@ -109,5 +109,6 @@ public class ReportMailerService {
     }
 
     emailService.sendEmail(emailData);
+    return true;
   }
 }

@@ -41,7 +41,7 @@ public class ReportCenterService {
   private final OilService oilService;
   private final SecureUtils secureUtils;
   
-  public void sendFeedback(ReportData data) throws MessagingException, IOException {
+  public boolean sendFeedback(ReportData data) throws MessagingException, IOException {
     val currentUser = secureUtils.getCurrentUser();
 
     if (config.getOil().isEnabled() && currentUser.isPresent()) {
@@ -50,12 +50,12 @@ public class ReportCenterService {
             currentUser.get().getUsername(),
             config.getOil().categoryMap().get(data.getCategory()), data.getCategory(),
             data.getUrl(), data.getNote());
-        oilService.sendFeedback(data, currentUser.get().getPerson());
+        return oilService.sendFeedback(data, currentUser.get().getPerson());
       } else {
-        reportMailerService.sendFeedback(data, currentUser);
+        return reportMailerService.sendFeedback(data, currentUser);
       }
     } else {
-      reportMailerService.sendFeedback(data, currentUser);
+      return reportMailerService.sendFeedback(data, currentUser);
     }
   }
 }

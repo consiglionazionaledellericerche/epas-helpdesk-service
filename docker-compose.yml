@@ -53,3 +53,8 @@ services:
 
       # Da impostare solo per test, ignora la categoria selezionata dall'utente
       #- epas.helpdesk.oil.fixedCategory=${OIL_FIXED_CATEGORY:-67}
+
+      #Da impostare per la gestione delle CORS
+      #- epas.helpdesk.cors.allowedOrigins=https://[*].cnr.it
+      #- epas.helpdesk.cors.allowedMethods=*
+      #- epas.helpdesk.cors.maxAge=3600

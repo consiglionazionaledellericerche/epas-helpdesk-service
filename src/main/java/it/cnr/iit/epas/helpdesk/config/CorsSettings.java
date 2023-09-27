@@ -15,23 +15,25 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package it.cnr.iit.epas.helpdesk.controller.v1.utils;
+package it.cnr.iit.epas.helpdesk.config;
+
+import lombok.Data;
+import lombok.ToString;
 
 /**
- * Costanti utili per le definizioni delle rotte delle API.
+ * Bean per contenere i parametri relativi al CORS.
  *
  * @author Cristian Lucchesi
  *
  */
-public class ApiRoutes {
+@ToString
+@Data
+public class CorsSettings {
 
-  private static final String ONLY_DIGITS_REGEX = "^\\d+$";
+    private String[] allowedOrigins;
 
-  public static final String BASE_PATH = "/rest/v1";
+    private String[] allowedMethods;
 
-  public static final String ID_REGEX = "{id:" + ONLY_DIGITS_REGEX + "}";
-
-  public static final String LIST = "";
-  public static final String SHOW = "/" + ID_REGEX;
+    private Long maxAge;
 
 }

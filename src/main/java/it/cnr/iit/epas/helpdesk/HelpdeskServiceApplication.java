@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.stream.StreamSupport;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cache.annotation.EnableCaching;
@@ -38,6 +39,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Slf4j
 @EnableAsync
 @EntityScan(basePackages = "it.cnr.iit.epas.helpdesk.models")
+@EnableAutoConfiguration
 @EnableJpaRepositories
 @EnableCaching
 @EnableTransactionManagement

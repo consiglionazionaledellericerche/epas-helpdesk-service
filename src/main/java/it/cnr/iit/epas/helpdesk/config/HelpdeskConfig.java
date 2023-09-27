@@ -20,6 +20,7 @@ package it.cnr.iit.epas.helpdesk.config;
 import com.google.common.collect.Maps;
 import java.io.Serializable;
 import java.util.Map;
+import javax.validation.Valid;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -96,5 +97,7 @@ public class HelpdeskConfig implements Serializable {
   //Configurazioni relative ad OIL.
   private Oil oil = new Oil();
   private Email email = new Email();
+  @Valid
+  private CorsSettings cors = new CorsSettings();
 
 }

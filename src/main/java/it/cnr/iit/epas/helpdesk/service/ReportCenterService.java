@@ -45,7 +45,7 @@ public class ReportCenterService {
     val currentUser = secureUtils.getCurrentUser();
 
     if (config.getOil().isEnabled() && currentUser.isPresent()) {
-      if (userDao.hasAdminRoles(currentUser.get()) && currentUser.get().getPerson() != null) {
+      if (!userDao.hasAdminRoles(currentUser.get()) && currentUser.get().getPerson() != null) {
         log.info("Invio ad OIL la segnalazione. Utente {}. Categoria: '{} (id={})'. Url: {}. Note: {}", 
             currentUser.get().getUsername(),
             config.getOil().categoryMap().get(data.getCategory()), data.getCategory(),

@@ -36,7 +36,7 @@ integrare lo *Swagger* per la visualizzazione della documentazione e l'interfacc
 servizi.
 
 L'interfaccia *Swagger* è disponibile nella url relativa alla propria installazione di ePAS Service
-con il path /swagger-ui/index.html. Es.: https://epas-helpdesk-service.amministrazione.cnr.it/swagger-ui/index.html.
+con il path /swagger-ui/index.html. Es.: https://epas-helpdesk-service.devel.iit.cnr.it/swagger-ui/index.html.
 
 
 ## 👏 Come Contribuire 
